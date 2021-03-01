@@ -1,0 +1,21 @@
+{
+  "name": "service-worker-event",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --config ./webpack.config.js --mode production"
+  },
+  "author": "gyteng",
+  "license": "MIT",
+  "devDependencies": {
+    "copy-webpack-plugin": "^7.0.0",
+    "cpy-cli": "^3.1.1",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.2.2",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
