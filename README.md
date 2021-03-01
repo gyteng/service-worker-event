@@ -19,3 +19,13 @@ An event emitter for communication between tabs using service worker.
     ```
     swe.emit('test', 'just a test.');
     ```
+
+### API
+
+1. swe.on(eventName, listener)
+
+2. swe.emit(eventName, payload)
+
+3. swe.remove(eventName, listener)
+
+4. swe.removeAll(eventName)
