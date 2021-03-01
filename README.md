@@ -2,6 +2,10 @@
 
 An event emitter for communication between tabs using service worker.
 
+
+### Demo
+
+[live demo](https://gyteng.github.io/service-worker-event/)
 ### Usage
 
 1. add `dist/index.bundle.js` in script
@@ -22,10 +26,10 @@ An event emitter for communication between tabs using service worker.
 
 ### API
 
-1. swe.on(eventName, listener)
+1. `swe.on(eventName, listener)`
 
-2. swe.emit(eventName, payload)
+2. `swe.emit(eventName, payload)`
 
-3. swe.remove(eventName, listener)
+3. `swe.remove(eventName, listener)`
 
-4. swe.removeAll(eventName)
+4. `swe.removeAll(eventName)`
