@@ -4,7 +4,7 @@ declare global {
 import ClientEvent from './client-event';
 
 const initWorker = async () => {
-  const registration = await navigator.serviceWorker.register('./service-worker.bundle.js', { scope: './' });
+  const registration = await navigator.serviceWorker.register('./service-worker.bundle.js');
   let worker;
   if (registration.installing) {
     worker = registration.installing;
