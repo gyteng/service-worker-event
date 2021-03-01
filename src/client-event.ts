@@ -5,7 +5,6 @@ class ClientEvent extends ServiceWorkerEvent {
   constructor(worker: ServiceWorker) {
     super();
     this.worker = worker;
-    // this.worker.addEventListener('message', this.handleMessage.bind(this));
     navigator.serviceWorker.addEventListener('message', this.handleMessage.bind(this));
     window.addEventListener('beforeunload', () => {
       this.sendMessageToWorker({ type: 'unregister' });
@@ -14,7 +13,7 @@ class ClientEvent extends ServiceWorkerEvent {
 
   private handleMessage(event) {
     const { from, type, eventName, data } = event.data;
-    // if (from !== 'service worker event') { return; }
+    if (from !== 'service worker event') { return; }
     if (type === 'emit') {
       super.emit(eventName, data);
     }
@@ -24,9 +23,8 @@ class ClientEvent extends ServiceWorkerEvent {
   }
 
   private sendMessageToWorker(message) {
-    // console.log('postMessage', this.worker, navigator.serviceWorker.controller);
+    message.from = 'service worker event';
     return this.worker.postMessage(message);
-    // return navigator.serviceWorker.controller.postMessage(message);
   }
 
   emit(eventName: string, eventData: any) {

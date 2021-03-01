@@ -1,5 +1,3 @@
-console.log('service worker start.');
-
 type EventSet = Set<string>;
 type ClientEventMap = Map<any, EventSet>;
 const clientEventMap: ClientEventMap = new Map<any, EventSet>();
@@ -7,6 +5,7 @@ const clientEventMap: ClientEventMap = new Map<any, EventSet>();
 const sendMessageToClient = (client, message) => {
   // @ts-ignore
   self.clients.get(client.id).then(function(myClient) {
+    message.from = 'service worker event';
     myClient.postMessage(message);
   });
 };
@@ -19,13 +18,12 @@ const handleClientRegister = (event) => {
 const handleClientUnregister = (event) => {
   const client = event.source;
   clientEventMap.delete(client);
-  console.log(clientEventMap);
 };
 
 const handleMessageFromClient = (event) => {
-  // console.log('receive message from worker:', event.source.id, event.data);
   const fromClient = event.source;
-  const { type, eventName, data } = event.data;
+  const { from, type, eventName, data } = event.data;
+  if (from !== 'service worker event') { return; }
   if (type === 'unregister') {
     handleClientUnregister(event);
   }
@@ -35,7 +33,6 @@ const handleMessageFromClient = (event) => {
     }
     const events = clientEventMap.get(fromClient);
     events.add(eventName);
-    console.log('clientEventMap', clientEventMap);
   }
   if (type === 'emit') {
     for (const [client, events] of clientEventMap) {

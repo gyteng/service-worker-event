@@ -9,18 +9,17 @@ const initWorker = async () => {
     worker = registration.waiting;
   } else if (registration.active) {
     worker = registration.active;
-    const ce = new ClientEvent(worker);
+    const swe = new ClientEvent(worker);
     // @ts-ignore
-    window.ce = ce;
+    window.swe = swe;
     return;
   }
   if (worker) {
     worker.addEventListener('statechange', function (e) {
-      // console.log(e.target.state);
       if (e.target.state === 'activated') {
-        const ce = new ClientEvent(worker);
+        const swe = new ClientEvent(worker);
         // @ts-ignore
-        window.ce = ce;
+        window.swe = swe;
       }
     });
   }
