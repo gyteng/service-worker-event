@@ -1,6 +1,6 @@
 ### service-worker-event
 
-An event emitter for communication between tabs using service worker.
+An event emitter for communication between tabs using [service worker](https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API).
 
 
 ### Demo
