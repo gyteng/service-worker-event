@@ -8,7 +8,7 @@ An event emitter for communication between tabs using [service worker](https://d
 [live demo](https://gyteng.github.io/service-worker-event/)
 ### Usage
 
-1. add `dist/index.bundle.js` in script
+1. add `docs/index.bundle.js` in script
 
     ```
     <script src="./index.bundle.js"></script>

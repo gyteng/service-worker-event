@@ -1,5 +1,5 @@
 declare global {
-  interface Window { swe: ClientEvent; }
+  interface Window { swe: ClientEvent }
 }
 import ClientEvent from './client-event';
 

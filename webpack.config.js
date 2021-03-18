@@ -7,7 +7,7 @@ module.exports = {
     'service-worker': './src/sw.ts',
   },
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, 'docs'),
     compress: true,
     port: 19000,
   },
@@ -25,7 +25,7 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'docs'),
   },
   plugins: [
     new CopyPlugin({

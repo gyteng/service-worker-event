@@ -4,7 +4,11 @@ const clientEventMap: ClientEventMap = new Map<any, EventSet>();
 
 const sendMessageToClient = (client, message) => {
   // @ts-ignore
-  self.clients.get(client.id).then(function(myClient) {
+  self.clients.get(client.id).then(myClient => {
+    if (!myClient) {
+      clientEventMap.delete(client);
+      return;
+    }
     message.from = 'service worker event';
     myClient.postMessage(message);
   });
