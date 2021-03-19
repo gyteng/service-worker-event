@@ -1,6 +1,10 @@
 module.exports = {
   // launch: {
   //   dumpio: true,
-  //   headless: true,
+  //   headless: false,
   // },
+  server: {
+    command: 'webpack serve --mode development',
+    port: 19000,
+  },
 }

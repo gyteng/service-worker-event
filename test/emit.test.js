@@ -1,6 +1,7 @@
 let page0;
 let page1;
 let page2;
+const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 describe('Receive data from other tabs', () => {
   beforeAll(async () => {
@@ -12,6 +13,12 @@ describe('Receive data from other tabs', () => {
     await page2.goto('http://localhost:19000');
 
     // await jestPuppeteer.debug();
+  });
+
+  afterAll(async () => {
+    await page0.close();
+    await page1.close();
+    await page2.close();
   });
 
   it('string', async () => {

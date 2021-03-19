@@ -28,8 +28,10 @@ An event emitter for communication between tabs using [service worker](https://d
 
 1. `swe.on(eventName, listener)`
 
-2. `swe.emit(eventName, payload)`
+2. `swe.once(eventName, listener)`
 
-3. `swe.remove(eventName, listener)`
+3. `swe.emit(eventName, payload)`
 
-4. `swe.removeAll(eventName)`
+4. `swe.remove(eventName, listener)`
+
+5. `swe.removeAll(eventName)`
