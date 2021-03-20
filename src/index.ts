@@ -7,7 +7,7 @@ const initWorker = async () => {
   try {
     const pathArray = location.pathname.split('/');
     pathArray.pop();
-    const serviceWorkerPath = pathArray.join('/') + 'service-worker.bundle.js';
+    const serviceWorkerPath = pathArray.join('/') + '/service-worker.bundle.js';
     const registration = await navigator.serviceWorker.register(serviceWorkerPath);
     let worker;
     if (registration.installing) {
