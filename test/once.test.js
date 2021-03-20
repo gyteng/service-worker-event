@@ -21,7 +21,7 @@ describe('Once event', () => {
     await page2.close();
   });
 
-  it('emit0', async () => {
+  it('once0', async () => {
     await page0.evaluate(() => {
       window.onTestOnce = data => {
         const newDiv = document.createElement('div');
@@ -44,7 +44,7 @@ describe('Once event', () => {
     await expect(text).toBe('test_once0');
   });
 
-  it('emit1', async () => {
+  it('once1', async () => {
     await page2.evaluate(() => {
       swe.emit('once', 'test_once1');
     });

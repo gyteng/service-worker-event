@@ -21,7 +21,7 @@ describe('Remove event', () => {
     await page2.close();
   });
 
-  it('emit0', async () => {
+  it('remove0', async () => {
     await page0.evaluate(() => {
       window.onTestRemove = data => {
         const newDiv = document.createElement('div');
@@ -44,7 +44,7 @@ describe('Remove event', () => {
     await expect(text).toBe('test_remove0');
   });
 
-  it('emit1', async () => {
+  it('remove1', async () => {
     await page2.evaluate(() => {
       swe.emit('test_remove', 'test_remove1');
     });
@@ -55,7 +55,7 @@ describe('Remove event', () => {
     await expect(text).toBe('test_remove1');
   });
 
-  it('remove', async () => {
+  it('remove2', async () => {
     await page0.evaluate(() => {
       swe.remove('test_remove', window.onTestRemove);
     });

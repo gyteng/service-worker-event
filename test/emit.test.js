@@ -3,7 +3,7 @@ let page1;
 let page2;
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
-describe('Receive data from other tabs', () => {
+describe('Emit event', () => {
   beforeAll(async () => {
     page0 = await browser.newPage();
     page1 = await browser.newPage();
