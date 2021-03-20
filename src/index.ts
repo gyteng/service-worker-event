@@ -5,7 +5,10 @@ import ClientEvent from './client-event';
 
 const initWorker = async () => {
   try {
-    const registration = await navigator.serviceWorker.register(location.pathname + 'service-worker.bundle.js');
+    const pathArray = location.pathname.split('/');
+    pathArray.pop();
+    const serviceWorkerPath = pathArray.join('/') + 'service-worker.bundle.js';
+    const registration = await navigator.serviceWorker.register(serviceWorkerPath);
     let worker;
     if (registration.installing) {
       worker = registration.installing;
