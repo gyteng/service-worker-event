@@ -1,0 +1,19 @@
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+body > div:nth-child(1) {
+  margin-bottom: 40px;
+  padding: 0 15px;
+}
+body > div:nth-child(2) {
+  margin-bottom: 70px;
+}
+body > div > img {
+  max-width: 100vw;
+}

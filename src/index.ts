@@ -2,6 +2,7 @@ declare global {
   interface Window { swe: ClientEvent }
 }
 import ClientEvent from './client-event';
+import './style.scss';
 
 const initWorker = async () => {
   try {
@@ -34,4 +35,4 @@ const initWorker = async () => {
   }
 }
 
-initWorker();
+await initWorker();
