@@ -1,9 +1,18 @@
 declare global {
-  interface Window { swe: ClientEvent }
+  interface Window {
+    swe: ClientEvent,
+    handleSampleClick: Function,
+    handleBenchmarkClick: Function,
+    startBenchmark: Function,
+  }
 }
 import ClientEvent from './client-event';
 import './style.scss';
 
+
+/**
+ * sample
+ */
 const initWorker = async () => {
   try {
     const pathArray = location.pathname.split('/');
@@ -36,3 +45,62 @@ const initWorker = async () => {
 }
 
 await initWorker();
+
+
+/**
+ * benchmark
+ */
+let start = 0;
+let count = 0;
+let benchmarkEventName = '';
+
+const startBenchmark = () => {
+  start = Date.now();
+  benchmarkEventName = '_benchmark' + Math.random().toString().substr(2);
+  window.swe.on(benchmarkEventName, handleReceiveBenchmarkMessage);
+  window.swe.emit('_start_benchmark', {
+    event: benchmarkEventName,
+  });
+};
+
+const printCount = () => {
+  const ele = document.querySelector('body .benchmark .count');
+  const newEle = document.createElement('div');
+  newEle.textContent = count.toString() + ' ' + (Date.now() - start);
+  ele.appendChild(newEle);
+};
+
+const handleReceiveBenchmarkMessage = data => {
+  count++;
+  if (count % 10000 === 0) {
+    printCount();
+  }
+};
+
+window.swe.on('_start_benchmark', data => {
+  const eventName = data.event;
+  if (benchmarkEventName === eventName) { return; }
+  for (let i = 0; i < 10000; i++) {
+    window.swe.emit(eventName, Date.now());
+  }
+});
+
+window.startBenchmark = startBenchmark;
+
+window.handleSampleClick = () =>  {
+  const sample = document.querySelector('body .sample');
+  // @ts-ignore
+  sample.style.display = 'flex';
+  const benchmark = document.querySelector('body .benchmark');
+  // @ts-ignore
+  benchmark.style.display = 'none';
+};
+
+window.handleBenchmarkClick = () => {
+  const sample = document.querySelector('body .sample');
+  // @ts-ignore
+  sample.style.display = 'none';
+  const benchmark = document.querySelector('body .benchmark');
+  // @ts-ignore
+  benchmark.style.display = 'flex';
+};

@@ -4,11 +4,21 @@
     <title>service-worker-event</title>
     <link rel="shortcut icon" type="image/png" href="favicon.png">
   <script defer="defer" src="index.bundle.js"></script></head>
-  <script src="./index.bundle.js"></script>
   <body>
-    
-    <div>open devtool and follow the commands in this page.</div>
-    <div><img src="./swe.gif"></div>
+    <div class="title">
+      <div onclick="handleSampleClick()">Sample</div>
+      <div onclick="handleBenchmarkClick()">Benchmark</div>
+    </div>
+    <div class="content">
+      <div class="sample">
+        <div>open devtool and follow the commands in this page.</div>
+        <div><img src="./swe.gif"></div>
+      </div>
+      <div class="benchmark">
+        <button type="button" onclick="startBenchmark()">start</button>
+        <div class="count"></div>
+      </div>
+    </div>
     <div id="test"></div>
   </body>
 </html>
