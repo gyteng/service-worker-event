@@ -52,20 +52,45 @@ await initWorker();
  */
 let start = 0;
 let count = 0;
-let benchmarkEventName = '';
+let startBenchmarkEventName = '';
+let prepareBenchmarkEventName = '';
+let tabs = 0;
+let timeout = null;
 
 const startBenchmark = () => {
-  if (benchmarkEventName) {
-    window.swe.remove(benchmarkEventName, handleReceiveBenchmarkMessage);
+  if (startBenchmarkEventName) {
+    window.swe.remove(startBenchmarkEventName, handleReceiveBenchmarkMessage);
   }
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  tabs = 0;
   const ele = document.querySelector('body .benchmark .count');
   ele.innerHTML = '';
   count = 0;
-  start = Date.now();
-  benchmarkEventName = '_benchmark' + Math.random().toString().substr(2);
-  window.swe.on(benchmarkEventName, handleReceiveBenchmarkMessage);
-  window.swe.emit('_start_benchmark', {
-    event: benchmarkEventName,
+  const random = Math.random().toString().substr(2);
+  startBenchmarkEventName = '_benchmark' + random;
+  prepareBenchmarkEventName = '_prepare_benchmark' + random;
+  timeout = setTimeout(() => {
+    if (!tabs) {
+      const tips = document.querySelector('body .benchmark .tips');
+      tips.setAttribute('style', 'display: flex');
+      return;
+    }
+    const tips = document.querySelector('body .benchmark .tips');
+    tips.setAttribute('style', 'display: none');
+    start = Date.now();
+    timeout = null;
+    window.swe.emit('_start_benchmark', {
+      start: startBenchmarkEventName,
+      number: Math.ceil(150000/tabs),
+    });
+  }, 1000);
+  window.swe.on(startBenchmarkEventName, handleReceiveBenchmarkMessage);
+  window.swe.on(prepareBenchmarkEventName, handlePrepareBenchmarkMessage);
+  window.swe.emit('_prepare_benchmark', {
+    prepare: prepareBenchmarkEventName,
   });
 };
 
@@ -90,30 +115,37 @@ const handleReceiveBenchmarkMessage = data => {
   }
 };
 
+const handlePrepareBenchmarkMessage = data => {
+  tabs++;
+};
+
 window.swe.on('_start_benchmark', data => {
-  const eventName = data.event;
-  if (benchmarkEventName === eventName) { return; }
-  for (let i = 0; i < 30000; i++) {
-    window.swe.emit(eventName, Date.now());
+  const startEventName = data.start;
+  const number = data.number;
+  if (startBenchmarkEventName === startEventName) { return; }
+  for (let i = 0; i < number; i++) {
+    window.swe.emit(startEventName, Date.now());
   }
+});
+
+window.swe.on('_prepare_benchmark', data => {
+  const prepareEventName = data.prepare;
+  if (prepareBenchmarkEventName === prepareEventName) { return; }
+  window.swe.emit(prepareEventName, '');
 });
 
 window.startBenchmark = startBenchmark;
 
 window.handleSampleClick = () =>  {
   const sample = document.querySelector('body .sample');
-  // @ts-ignore
-  sample.style.display = 'flex';
+  sample.setAttribute('style', 'display: flex');
   const benchmark = document.querySelector('body .benchmark');
-  // @ts-ignore
-  benchmark.style.display = 'none';
+  benchmark.setAttribute('style', 'display: none');
 };
 
 window.handleBenchmarkClick = () => {
   const sample = document.querySelector('body .sample');
-  // @ts-ignore
-  sample.style.display = 'none';
+  sample.setAttribute('style', 'display: none');
   const benchmark = document.querySelector('body .benchmark');
-  // @ts-ignore
-  benchmark.style.display = 'flex';
+  benchmark.setAttribute('style', 'display: flex');
 };
