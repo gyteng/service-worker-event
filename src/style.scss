@@ -45,6 +45,12 @@ body {
       > .count {
         display: flex;
         flex-direction: column;
+        min-width: 30vw;
+        max-width: 90vw;
+        > div {
+          display: flex;
+          justify-content: space-between;
+        }
       }
     }
   }

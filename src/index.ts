@@ -71,9 +71,16 @@ const startBenchmark = () => {
 
 const printCount = () => {
   const ele = document.querySelector('body .benchmark .count');
-  const newEle = document.createElement('div');
-  newEle.textContent = count.toString() + ' ' + (Date.now() - start);
-  ele.appendChild(newEle);
+  const newElement = document.createElement('div');
+  const newChildElement0 = document.createElement('div');
+  newChildElement0.className = 'number';
+  newChildElement0.textContent = count.toString();
+  const newChildElement1 = document.createElement('div');
+  newChildElement1.className = 'time';
+  newChildElement1.textContent = (Date.now() - start).toString() + ' ms';
+  newElement.appendChild(newChildElement0);
+  newElement.appendChild(newChildElement1);
+  ele.appendChild(newElement);
 };
 
 const handleReceiveBenchmarkMessage = data => {
@@ -86,7 +93,7 @@ const handleReceiveBenchmarkMessage = data => {
 window.swe.on('_start_benchmark', data => {
   const eventName = data.event;
   if (benchmarkEventName === eventName) { return; }
-  for (let i = 0; i < 10000; i++) {
+  for (let i = 0; i < 30000; i++) {
     window.swe.emit(eventName, Date.now());
   }
 });
