@@ -55,6 +55,12 @@ let count = 0;
 let benchmarkEventName = '';
 
 const startBenchmark = () => {
+  if (benchmarkEventName) {
+    window.swe.remove(benchmarkEventName, handleReceiveBenchmarkMessage);
+  }
+  const ele = document.querySelector('body .benchmark .count');
+  ele.innerHTML = '';
+  count = 0;
   start = Date.now();
   benchmarkEventName = '_benchmark' + Math.random().toString().substr(2);
   window.swe.on(benchmarkEventName, handleReceiveBenchmarkMessage);
