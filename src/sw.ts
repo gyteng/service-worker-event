@@ -26,34 +26,42 @@ const handleClientUnregister = (event) => {
 
 const handleMessageFromClient = (event) => {
   const fromClient = event.source;
-  const { from, type, eventName, data } = event.data;
-  if (from !== 'service worker event') { return; }
-  if (type === 'unregister') {
-    handleClientUnregister(event);
+  let messages = [];
+  if (Array.isArray(event.data)) {
+    messages = event.data;
+  } else {
+    messages[0] = event.data;
   }
-  if (type === 'on' || type === 'once') {
-    if (!clientEventMap.has(fromClient)) {
-      handleClientRegister(event);
+  for (const message of messages) {
+    const { from, type, eventName, data } = message;
+    if (from !== 'service worker event') { return; }
+    if (type === 'unregister') {
+      handleClientUnregister(event);
     }
-    const events = clientEventMap.get(fromClient);
-    events.add(eventName);
-  }
-  if (type === 'emit') {
-    for (const [client, events] of clientEventMap) {
-      if (events.has(eventName) && fromClient !== client) {
-        sendMessageToClient(client, { type, eventName, data });
+    if (type === 'on' || type === 'once') {
+      if (!clientEventMap.has(fromClient)) {
+        handleClientRegister(event);
+      }
+      const events = clientEventMap.get(fromClient);
+      events.add(eventName);
+    }
+    if (type === 'emit') {
+      for (const [client, events] of clientEventMap) {
+        if (events.has(eventName) && fromClient !== client) {
+          sendMessageToClient(client, { type, eventName, data });
+        }
       }
     }
-  }
-  if (type === 'remove') {
-    const events = clientEventMap.get(fromClient);
-    events && events.delete(eventName);
-  }
-  if (type === 'removeAll') {
-    for (const [client, events] of clientEventMap) {
-      if (events.has(eventName)) {
-        sendMessageToClient(client, { type, eventName, data });
-        events && events.delete(eventName);
+    if (type === 'remove') {
+      const events = clientEventMap.get(fromClient);
+      events && events.delete(eventName);
+    }
+    if (type === 'removeAll') {
+      for (const [client, events] of clientEventMap) {
+        if (events.has(eventName)) {
+          sendMessageToClient(client, { type, eventName, data });
+          events && events.delete(eventName);
+        }
       }
     }
   }

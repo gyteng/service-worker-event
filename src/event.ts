@@ -7,11 +7,9 @@ type FunctionEventMap = Map<string, FunctionSet>;
 
 class ServiceWorkerEvent {
   protected functionEventMap: FunctionEventMap;
-  public _id: String;
 
   constructor() {
     this.functionEventMap = new Map<string, FunctionSet>();
-    this._id = Math.random().toString().substr(2);
   }
   
   emit(eventName: string, eventData: any) {

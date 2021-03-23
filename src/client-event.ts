@@ -2,40 +2,69 @@ import ServiceWorkerEvent from './event';
 
 class ClientEvent extends ServiceWorkerEvent {
   worker: ServiceWorker;
+  private _lastSendMessage: number;
+  private _sendMessageTimeout: number | null;
+  private _combineMessages: Array<any>;
   constructor(worker: ServiceWorker) {
     super();
     this.worker = worker;
-    navigator.serviceWorker.addEventListener('message', this.handleMessage.bind(this));
+    this._lastSendMessage = 0;
+    this._sendMessageTimeout = null;
+    this._combineMessages = [];
+    navigator.serviceWorker.addEventListener('message', this._handleMessage.bind(this));
     window.addEventListener('beforeunload', () => {
-      this.sendMessageToWorker({ type: 'unregister' });
+      this._sendMessageToWorker({ type: 'unregister' });
     });
   }
 
-  private handleMessage(event) {
-    const { from, type, eventName, data } = event.data;
-    if (from !== 'service worker event') { return; }
-    if (type === 'emit') {
-      super.emit(eventName, data);
+  private _handleMessage(event) {
+    let messages = [];
+    if (Array.isArray(event.data)) {
+      messages = event.data;
+    } else {
+      messages[0] = event.data;
     }
-    if (type === 'removeAll') {
-      super.removeAll(eventName);
+    for (const message of messages) {
+      const { from, type, eventName, data } = message;
+      if (from !== 'service worker event') { return; }
+      if (type === 'emit') {
+        super.emit(eventName, data);
+      }
+      if (type === 'removeAll') {
+        super.removeAll(eventName);
+      }
     }
   }
 
-  private sendMessageToWorker(message) {
-    message.from = 'service worker event';
-    return this.worker.postMessage(message);
+  private _sendMessageToWorker(message?) {
+    if (message) {
+      message.from = 'service worker event';
+      this._combineMessages.push(message);
+    }
+    if (16 > Date.now() - this._lastSendMessage) {
+      if (this._sendMessageTimeout) {
+        window.clearTimeout(this._sendMessageTimeout);
+      }
+      this._sendMessageTimeout = window.setTimeout(() => {
+        this._sendMessageTimeout = null;
+        this._sendMessageToWorker();
+      }, Date.now() - this._lastSendMessage);
+      return;
+    }
+    this._lastSendMessage = Date.now();
+    this.worker.postMessage(this._combineMessages);
+    this._combineMessages = [];
   }
 
   emit(eventName: string, eventData: any) {
-    this.sendMessageToWorker({
+    this._sendMessageToWorker({
       type: 'emit',
       eventName,
       data: eventData,
     });
     super.emit(eventName, eventData);
     if (!super.hasEventName(eventName)) {
-      this.sendMessageToWorker({
+      this._sendMessageToWorker({
         type: 'remove',
         eventName,
       });
@@ -43,7 +72,7 @@ class ClientEvent extends ServiceWorkerEvent {
   }
 
   on(eventName: string, listener: Function) {
-    this.sendMessageToWorker({
+    this._sendMessageToWorker({
       type: 'on',
       eventName,
     });
@@ -51,7 +80,7 @@ class ClientEvent extends ServiceWorkerEvent {
   }
 
   once(eventName: string, listener: Function) {
-    this.sendMessageToWorker({
+    this._sendMessageToWorker({
       type: 'once',
       eventName,
     });
@@ -61,7 +90,7 @@ class ClientEvent extends ServiceWorkerEvent {
   remove(eventName: string, listener: Function) {
     super.remove(eventName, listener);
     if (!super.hasEventName(eventName)) {
-      this.sendMessageToWorker({
+      this._sendMessageToWorker({
         type: 'remove',
         eventName,
       });
@@ -69,7 +98,7 @@ class ClientEvent extends ServiceWorkerEvent {
   }
 
   removeAll(eventName: string) {
-    this.sendMessageToWorker({
+    this._sendMessageToWorker({
       type: 'removeAll',
       eventName,
     });
