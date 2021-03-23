@@ -106,6 +106,19 @@ const printCount = () => {
   newElement.appendChild(newChildElement0);
   newElement.appendChild(newChildElement1);
   ele.appendChild(newElement);
+  const childNumber = ele.childNodes.length;
+  if (childNumber === 15) {
+    const speedElement = document.createElement('div');
+    const newChildElement0 = document.createElement('div');
+    newChildElement0.className = 'number';
+    newChildElement0.textContent = 'speed';
+    const newChildElement1 = document.createElement('div');
+    newChildElement1.className = 'time';
+    newChildElement1.textContent = Math.floor(15000 * 1000 / (Date.now() - start)) + ' per second';
+    speedElement.appendChild(newChildElement0);
+    speedElement.appendChild(newChildElement1);
+    ele.appendChild(speedElement);
+  }
 };
 
 const handleReceiveBenchmarkMessage = data => {
