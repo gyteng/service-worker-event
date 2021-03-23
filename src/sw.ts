@@ -1,27 +1,65 @@
 type EventSet = Set<string>;
-type ClientEventMap = Map<any, EventSet>;
-const clientEventMap: ClientEventMap = new Map<any, EventSet>();
+type ClientObj = {
+  client: any,
+  events: EventSet,
+  lastSendMessage: number,
+  sendMessageTimeout: number | null;
+  combineMessages: Array<any>,
+};
+type Clients = {
+  [key: string]: ClientObj,
+};
+const clients: Clients = {};
 
-const sendMessageToClient = (client, message) => {
+const sendMessageToClient = async (client, message?) => {
   // @ts-ignore
-  self.clients.get(client.id).then(myClient => {
-    if (!myClient) {
-      clientEventMap.delete(client);
-      return;
-    }
+  const myClient = await self.clients.get(client.id);
+  if (!myClient) {
+    delete clients[client.id];
+    return;
+  }
+  const clientObj = getClient(client);
+  if (message) {
     message.from = 'service worker event';
-    myClient.postMessage(message);
-  });
+    clientObj.combineMessages.push(message);
+  }
+  if (30 > Date.now() - clientObj.lastSendMessage && clientObj.combineMessages.length < 100) {
+    if (clientObj.sendMessageTimeout) {
+      clearTimeout(clientObj.sendMessageTimeout);
+    }
+    clientObj.sendMessageTimeout = self.setTimeout(() => {
+      clientObj.sendMessageTimeout = null;
+      sendMessageToClient(client);
+    }, Date.now() - clientObj.lastSendMessage);
+    return;
+  }
+  clientObj.lastSendMessage = Date.now();
+  myClient.postMessage(clientObj.combineMessages);
+  clientObj.combineMessages = [];
+};
+
+const hasClient = (client): Boolean => {
+  return !!clients[client.id];
+};
+
+const getClient = (client): ClientObj => {
+  return clients[client.id];
 };
 
 const handleClientRegister = (event) => {
   const client = event.source;
-  clientEventMap.set(client, new Set<string>());
+  clients[client.id] = {
+    client,
+    events: new Set<string>(),
+    lastSendMessage: 0,
+    sendMessageTimeout: null,
+    combineMessages: [],
+  };
 };
 
 const handleClientUnregister = (event) => {
   const client = event.source;
-  clientEventMap.delete(client);
+  delete clients[client.id];
 };
 
 const handleMessageFromClient = (event) => {
@@ -39,25 +77,27 @@ const handleMessageFromClient = (event) => {
       handleClientUnregister(event);
     }
     if (type === 'on' || type === 'once') {
-      if (!clientEventMap.has(fromClient)) {
+      if (!hasClient(fromClient)) {
         handleClientRegister(event);
       }
-      const events = clientEventMap.get(fromClient);
+      const { events } = getClient(fromClient);
       events.add(eventName);
     }
     if (type === 'emit') {
-      for (const [client, events] of clientEventMap) {
-        if (events.has(eventName) && fromClient !== client) {
+      for (const id in clients) {
+        const { client, events } = clients[id];
+        if (events.has(eventName) && fromClient.id !== client.id) {
           sendMessageToClient(client, { type, eventName, data });
         }
       }
     }
     if (type === 'remove') {
-      const events = clientEventMap.get(fromClient);
+      const { events } = getClient(fromClient);
       events && events.delete(eventName);
     }
     if (type === 'removeAll') {
-      for (const [client, events] of clientEventMap) {
+      for (const id in clients) {
+        const { client, events } = clients[id];
         if (events.has(eventName)) {
           sendMessageToClient(client, { type, eventName, data });
           events && events.delete(eventName);

@@ -41,7 +41,7 @@ class ClientEvent extends ServiceWorkerEvent {
       message.from = 'service worker event';
       this._combineMessages.push(message);
     }
-    if (16 > Date.now() - this._lastSendMessage) {
+    if (30 > Date.now() - this._lastSendMessage && this._combineMessages.length < 100) {
       if (this._sendMessageTimeout) {
         window.clearTimeout(this._sendMessageTimeout);
       }

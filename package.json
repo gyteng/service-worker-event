@@ -1,6 +1,6 @@
 {
   "name": "service-worker-event",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "an event emitter for communication between tabs using service worker",
   "main": "dist/index.bundle.js",
   "scripts": {
