@@ -35,3 +35,11 @@ An event emitter for communication between tabs using [service worker](https://d
 4. `swe.remove(eventName, listener)`
 
 5. `swe.removeAll(eventName)`
+
+### Test
+
+run `npm run test`
+
+### Benchmark
+
+Open multi [demo page](https://gyteng.github.io/service-worker-event/) and click the benchmark start button.

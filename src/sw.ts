@@ -25,7 +25,7 @@ const sendMessageToClient = async (client, message?) => {
   }
   if (30 > Date.now() - clientObj.lastSendMessage && clientObj.combineMessages.length < 100) {
     if (clientObj.sendMessageTimeout) {
-      clearTimeout(clientObj.sendMessageTimeout);
+      self.clearTimeout(clientObj.sendMessageTimeout);
     }
     clientObj.sendMessageTimeout = self.setTimeout(() => {
       clientObj.sendMessageTimeout = null;
