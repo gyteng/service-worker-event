@@ -22,30 +22,26 @@ describe('Emit event', () => {
   });
 
   it('string', async () => {
-    setTimeout(async () => {
-      await page0.evaluate(() => {
-        swe.on('test_string', data => {
-          const newDiv = document.createElement('div');
-          newDiv.className = 'test_string';
-          const newContent = document.createTextNode(data);
-          newDiv.appendChild(newContent);
-          const testDiv = document.getElementById('test');
-          testDiv.appendChild(newDiv);
-        });
+    await page0.evaluate(() => {
+      swe.on('test_string', data => {
+        const newDiv = document.createElement('div');
+        newDiv.className = 'test_string';
+        const newContent = document.createTextNode(data);
+        newDiv.appendChild(newContent);
+        const testDiv = document.getElementById('test');
+        testDiv.appendChild(newDiv);
       });
-    }, 100);
-    setTimeout(async () => {
-      await page1.evaluate(() => {
-        swe.emit('test_string', 'ABCDEabced');
-      });
-    }, 200);
-    let text = () => new Promise(resolve => {
-      setTimeout(() => resolve(page0.evaluate(() => {
-        swe.removeAll('test_string');
-        return document.querySelector('#test .test_string').textContent;
-      })), 500);
     });
-    await expect(text()).resolves.toBe('ABCDEabced');
+    await sleep(100);
+    await page1.evaluate(() => {
+      swe.emit('test_string', 'ABCDEabced');
+    });
+    await sleep(100);
+    const text = await page0.evaluate(() => {
+      swe.removeAll('test_string');
+      return document.querySelector('#test .test_string').textContent;
+    });
+    await expect(text).toBe('ABCDEabced');
   });
 
   it('number', async () => {
@@ -100,5 +96,34 @@ describe('Emit event', () => {
       })), 500);
     });
     await expect(text()).resolves.toBe(JSON.stringify({ a: '123', b: 456, c: { d: '789' } }));
+  });
+
+  it('multi', async () => {
+    await page0.evaluate(() => {
+      swe.on('test_multi', data => {
+        const newDiv = document.createElement('div');
+        newDiv.className = 'test_multi_' + data;
+        const newContent = document.createTextNode(data);
+        newDiv.appendChild(newContent);
+        const testDiv = document.getElementById('test');
+        testDiv.appendChild(newDiv);
+      });
+    });
+    await sleep(100);
+    await page1.evaluate(() => {
+      for (let i = 0; i < 300; i++) {
+        swe.emit('test_multi', i.toString());
+      }
+    });
+    await sleep(400);
+    const text = await page0.evaluate(() => {
+      swe.removeAll('test_multi');
+      let result = [];
+      for (let i = 0; i < 300; i++) {
+        result.push(document.querySelector('#test .test_multi_' + i).textContent);
+      }
+      return result;
+    });
+    await expect(text).toEqual([...new Array(300).keys()].map(m => m.toString()));
   });
 });
