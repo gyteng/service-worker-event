@@ -23,40 +23,32 @@ describe('On event', () => {
 
   it('on0', async () => {
     await page0.evaluate(() => {
+      window.testOnData = {};
       window.onTestOn = data => {
-        const newDiv = document.createElement('div');
-        newDiv.className = data;
-        const newContent = document.createTextNode(data);
-        newDiv.appendChild(newContent);
-        const testDiv = document.getElementById('test');
-        testDiv.appendChild(newDiv);
+        window.testOnData[data] = data;
       };
       swe.on('test_on', window.onTestOn);
     });
     await page1.evaluate(() => {
+      window.testOnData = {};
       window.onTestOn = data => {
-        const newDiv = document.createElement('div');
-        newDiv.className = data;
-        const newContent = document.createTextNode(data);
-        newDiv.appendChild(newContent);
-        const testDiv = document.getElementById('test');
-        testDiv.appendChild(newDiv);
+        window.testOnData[data] = data;
       };
       swe.on('test_on', window.onTestOn);
     });
-    await sleep(100);
+    await sleep(30);
     await page2.evaluate(() => {
       swe.emit('test_on', 'test_on0');
     });
-    await sleep(100);
+    await sleep(30);
     let text0 = await page0.evaluate(() => {
-      return document.querySelector('#test .test_on0').textContent;
+      return window.testOnData.test_on0;
     });
     let text1 = await page1.evaluate(() => {
-      return document.querySelector('#test .test_on0').textContent;
+      return window.testOnData.test_on0;
     });
-    await expect(text0).toBe('test_on0');
-    await expect(text1).toBe('test_on0');
+    expect(text0).toBe('test_on0');
+    expect(text1).toBe('test_on0');
   });
 
   it('on1', async () => {
@@ -64,12 +56,12 @@ describe('On event', () => {
       swe.emit('test_on', 'test_on1');
     });
     let text0 = await page0.evaluate(() => {
-      return document.querySelector('#test .test_on1').textContent;
+      return window.testOnData.test_on1;
     });
     let text1 = await page1.evaluate(() => {
-      return document.querySelector('#test .test_on1').textContent;
+      return window.testOnData.test_on1;
     });
-    await expect(text0).toBe('test_on1');
-    await expect(text1).toBe('test_on1');
+    expect(text0).toBe('test_on1');
+    expect(text1).toBe('test_on1');
   });
 });
