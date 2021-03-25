@@ -58,6 +58,8 @@ let tabs = 0;
 let timeout = null;
 
 const startBenchmark = () => {
+  const tips = document.querySelector('body .benchmark .tips');
+  tips.setAttribute('style', 'display: none');
   if (startBenchmarkEventName) {
     window.swe.remove(startBenchmarkEventName, handleReceiveBenchmarkMessage);
   }
@@ -78,8 +80,6 @@ const startBenchmark = () => {
       tips.setAttribute('style', 'display: flex');
       return;
     }
-    const tips = document.querySelector('body .benchmark .tips');
-    tips.setAttribute('style', 'display: none');
     start = Date.now();
     timeout = null;
     window.swe.emit('_start_benchmark', {
@@ -114,7 +114,7 @@ const printCount = () => {
     newChildElement0.textContent = 'speed';
     const newChildElement1 = document.createElement('div');
     newChildElement1.className = 'time';
-    newChildElement1.textContent = Math.floor(15000 * 1000 / (Date.now() - start)) + ' per second';
+    newChildElement1.textContent = Math.floor(15000 * 1000 / (Date.now() - start)) + ' events/s';
     speedElement.appendChild(newChildElement0);
     speedElement.appendChild(newChildElement1);
     ele.appendChild(speedElement);
