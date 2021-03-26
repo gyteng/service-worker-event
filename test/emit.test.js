@@ -126,4 +126,35 @@ describe('Emit event', () => {
     });
     await expect(text).toEqual([...new Array(300).keys()].map(m => m.toString()));
   });
+
+  it('args', async () => {
+    await page0.evaluate(() => {
+      window.onTestArgs = (...args) => {
+        window.testArgsData = args;
+      };
+      swe.on('test_args', window.onTestArgs);
+    });
+    await page1.evaluate(() => {
+      window.onTestArgs = (...args) => {
+        window.testArgsData = args;
+      };
+      swe.on('test_args', window.onTestArgs);
+    });
+    await sleep(100);
+    await page1.evaluate(() => {
+      swe.emit('test_args', 'test_args1', 'test_args2', 1234, 5678, { foo: 'bar' });
+    });
+    await page2.evaluate(() => {
+      swe.emit('test_args', 'test_args1', 'test_args2', 1234, 5678, { foo: 'bar' });
+    });
+    await sleep(100);
+    const text0 = await page0.evaluate(() => {
+      return window.testArgsData;
+    });
+    const text1 = await page1.evaluate(() => {
+      return window.testArgsData;
+    });
+    expect(text0).toEqual([ 'test_args1', 'test_args2', 1234, 5678, { foo: 'bar' } ]);
+    expect(text1).toEqual([ 'test_args1', 'test_args2', 1234, 5678, { foo: 'bar' } ]);
+  });
 });

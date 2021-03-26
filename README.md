@@ -30,7 +30,7 @@ An event emitter for communication between tabs using [service worker](https://d
 
 2. `swe.once(eventName, listener)`
 
-3. `swe.emit(eventName, payload)`
+3. `swe.emit(eventName, payload0, payload1, payload2, ...)`
 
 4. `swe.remove(eventName, listener)`
 

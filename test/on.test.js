@@ -36,11 +36,11 @@ describe('On event', () => {
       };
       swe.on('test_on', window.onTestOn);
     });
-    await sleep(30);
+    await sleep(100);
     await page2.evaluate(() => {
       swe.emit('test_on', 'test_on0');
     });
-    await sleep(30);
+    await sleep(100);
     let text0 = await page0.evaluate(() => {
       return window.testOnData.test_on0;
     });
@@ -55,6 +55,7 @@ describe('On event', () => {
     await page0.evaluate(() => {
       swe.emit('test_on', 'test_on1');
     });
+    await sleep(30);
     let text0 = await page0.evaluate(() => {
       return window.testOnData.test_on1;
     });

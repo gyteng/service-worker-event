@@ -12,11 +12,11 @@ class ServiceWorkerEvent {
     this.functionEventMap = new Map<string, FunctionSet>();
   }
   
-  emit(eventName: string, eventData: any) {
+  emit(eventName: string, ...eventData: any) {
     const functions = this.functionEventMap.get(eventName);
     if (!functions) { return; }
     for (const fnObj of functions) {
-      fnObj.fn(eventData);
+      fnObj.fn(...eventData);
       if (fnObj.isOnce) {
         this.remove(eventName, fnObj.fn);
       }

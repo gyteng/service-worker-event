@@ -28,7 +28,7 @@ class ClientEvent extends ServiceWorkerEvent {
       const { from, type, eventName, data } = message;
       if (from !== 'service worker event') { return; }
       if (type === 'emit') {
-        super.emit(eventName, data);
+        super.emit(eventName, ...data);
       }
       if (type === 'removeAll') {
         super.removeAll(eventName);
@@ -56,13 +56,13 @@ class ClientEvent extends ServiceWorkerEvent {
     this._combineMessages = [];
   }
 
-  emit(eventName: string, eventData: any) {
+  emit(eventName: string, ...eventData: any) {
     this._sendMessageToWorker({
       type: 'emit',
       eventName,
       data: eventData,
     });
-    super.emit(eventName, eventData);
+    super.emit(eventName, ...eventData);
     if (!super.hasEventName(eventName)) {
       this._sendMessageToWorker({
         type: 'remove',
