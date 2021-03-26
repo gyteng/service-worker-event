@@ -33,11 +33,18 @@ const initWorker = async () => {
     if (!worker) {
       throw new Error('worker not exists');
     }
-    worker.addEventListener('statechange', function (e) {
-      if (e.target.state === 'activated') {
-        const swe = new ClientEvent(worker);
-        window.swe = swe;
-      }
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        return reject('get worker timeout');
+      }, 3000);
+      worker.addEventListener('statechange', function (e) {
+        if (e.target.state === 'activated') {
+          const swe = new ClientEvent(worker);
+          window.swe = swe;
+          window.clearTimeout(timeout);
+          return resolve(undefined);
+        }
+      });
     });
   } catch (err) {
     console.error('init service worker error:', err);
