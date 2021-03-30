@@ -23,13 +23,9 @@ describe('Remove event', () => {
 
   it('remove0', async () => {
     await page0.evaluate(() => {
+      window.testRemoveData = {};
       window.onTestRemove = data => {
-        const newDiv = document.createElement('div');
-        newDiv.className = data;
-        const newContent = document.createTextNode(data);
-        newDiv.appendChild(newContent);
-        const testDiv = document.getElementById('test');
-        testDiv.appendChild(newDiv);
+        testRemoveData[data] = data;
       };
       swe.on('test_remove', window.onTestRemove);
     });
@@ -39,7 +35,7 @@ describe('Remove event', () => {
     });
     await sleep(100);
     let text = await page0.evaluate(() => {
-      return document.querySelector('#test .test_remove0').textContent;
+      return testRemoveData['test_remove0'];
     });
     await expect(text).toBe('test_remove0');
   });
@@ -50,7 +46,7 @@ describe('Remove event', () => {
     });
     await sleep(100);
     let text = await page0.evaluate(() => {
-      return document.querySelector('#test .test_remove1').textContent;
+      return testRemoveData['test_remove1'];
     });
     await expect(text).toBe('test_remove1');
   });
@@ -64,8 +60,8 @@ describe('Remove event', () => {
     });
     await sleep(100);
     let text = await page0.evaluate(() => {
-      return document.querySelector('#test .test_remove2');
+      return testRemoveData['test_remove2'];
     });
-    await expect(text).toBeNull();
+    await expect(text).toBeUndefined();
   });
 });
