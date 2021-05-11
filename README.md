@@ -38,7 +38,7 @@ An event emitter for communication between tabs using [service worker](https://d
 
 ### Test
 
-run `npm run test`
+run `npm run build && npm run test`
 
 ### Benchmark
 

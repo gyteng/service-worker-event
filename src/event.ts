@@ -16,7 +16,11 @@ class ServiceWorkerEvent {
     const functions = this.functionEventMap.get(eventName);
     if (!functions) { return; }
     for (const fnObj of functions) {
-      fnObj.fn(...eventData);
+      try {
+        fnObj.fn(...eventData); 
+      } catch(err) {
+        console.error(`function error in [${eventName}]:`, err);
+      }
       if (fnObj.isOnce) {
         this.remove(eventName, fnObj.fn);
       }
