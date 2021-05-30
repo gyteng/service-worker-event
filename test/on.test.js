@@ -88,6 +88,7 @@ describe('On event', () => {
     await page1.evaluate(() => {
       swe.emit('test_on_error', 'AsDfGh12345');
     });
+    await sleep(30);
     const [text0, text1, text2] = await page0.evaluate(() => {
       return window.testOnError;
     });
