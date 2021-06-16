@@ -24,11 +24,7 @@
     "ts-loader": "^8.3.0",
     "typescript": "^4.3.2",
     "webpack": "^5.38.1",
-<<<<<<< HEAD
     "webpack-cli": "^4.7.2",
-=======
-    "webpack-cli": "^4.7.0",
->>>>>>> 2b4d0099f46b21df238a7250b0249cd8a9736067
     "webpack-dev-server": "^3.11.2"
   }
 }
